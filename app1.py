@@ -13,12 +13,12 @@ st.markdown("""
    Metric Cards (Compact)
 ------------------------- */
 .metric-card {
-    background-color: #2A1A47;       /* dark purple background */
+    background-color: #4B2E83;       /* TCU-style purple background */
     padding: 10px 15px;
     border-radius: 8px;
     text-align: center;
-    color: white;
-    box-shadow: 0px 3px 8px rgba(0,0,0,0.4);
+    color: white;                     /* main text in white */
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.4); /* black shadow */
     transition: transform 0.15s;
     margin-bottom: 8px;
 }
@@ -30,13 +30,13 @@ st.markdown("""
 .metric-number {
     font-size: 22px;
     font-weight: 700;
-    color: #EAB93B;                   /* gold accent color */
+    color: white;                     /* highlight number in white */
     margin-bottom: 4px;
 }
 
 .metric-label {
     font-size: 12px;
-    color: #CCCCCC;                  /* soft gray label text */
+    color: #FFFFFFCC;                 /* slightly transparent white for subtle labels */
     font-weight: 500;
 }
 
@@ -377,5 +377,6 @@ if uploaded_file:
         predicted_play = le.inverse_transform(prediction)[0]
 
         st.metric("Predicted Play Type", predicted_play)
+
 
 
