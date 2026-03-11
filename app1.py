@@ -13,47 +13,43 @@ st.markdown("""
    Metric Cards (Compact)
 ------------------------- */
 .metric-card {
-    background-color: #0A2342;       /* card color */
-    padding: 10px 15px;               /* smaller padding top/bottom & left/right */
-    border-radius: 8px;               /* slightly smaller corners */
+    background-color: #2A1A47;       /* dark purple background */
+    padding: 10px 15px;
+    border-radius: 8px;
     text-align: center;
     color: white;
-    box-shadow: 0px 3px 8px rgba(0,0,0,0.4); /* slightly lighter shadow */
-    transition: transform 0.15s;      /* faster, subtle hover */
-    margin-bottom: 8px;               /* spacing below cards */
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.4);
+    transition: transform 0.15s;
+    margin-bottom: 8px;
 }
 
 .metric-card:hover {
-    transform: scale(1.03);           /* small hover effect */
+    transform: scale(1.03);
 }
 
 .metric-number {
-    font-size: 22px;                  /* smaller number size */
+    font-size: 22px;
     font-weight: 700;
-    color: #7FDBFF;                   /* highlight color */
-    margin-bottom: 4px;               /* space between number and label */
+    color: #EAB93B;                   /* gold accent color */
+    margin-bottom: 4px;
 }
 
 .metric-label {
-    font-size: 12px;                  /* smaller label */
-    color: #AAAAAA;
+    font-size: 12px;
+    color: #CCCCCC;                  /* soft gray label text */
     font-weight: 500;
 }
 
-/* optional: make metrics in columns evenly spaced */
 .metric-column {
     display: flex;
     flex-direction: column;
-    gap: 8px;  /* space between stacked cards if needed */
+    gap: 8px;
 }
-</style>
-""", unsafe_allow_html=True)
-
 # -------------------------
 # Sidebar Logo
 # -------------------------
 st.sidebar.markdown('<div style="text-align:center; margin-bottom:20px;">', unsafe_allow_html=True)
-st.sidebar.image("logo_har-ber-high-school.png", width=150)
+st.sidebar.image("large_ChapelHillHs_AthleticMark.png", width=150)
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # -------------------------
@@ -381,5 +377,6 @@ if uploaded_file:
 
         prediction = model.predict([[pred_down, pred_dist, pred_yard]])
         predicted_play = le.inverse_transform(prediction)[0]
+
 
         st.metric("Predicted Play Type", predicted_play)
