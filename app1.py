@@ -11,18 +11,17 @@ from sklearn.preprocessing import LabelEncoder
 st.set_page_config(page_title="Chapel Hill Football Analytics", layout="wide")
 
 # -------------------------
-# Custom CSS (TCU-style Purple)
+# Custom CSS (Purple + Gray Theme)
 # -------------------------
 st.markdown("""
 <style>
-/* Metric Cards */
 .metric-card {
-    background-color: #4B2E83;       /* TCU-style purple */
+    background-color: #4B2E83;       /* main purple */
     padding: 10px 15px;
     border-radius: 8px;
     text-align: center;
-    color: white;
-    box-shadow: 0px 3px 8px rgba(0,0,0,0.4);
+    color: #E0E0E0;                  /* light gray text */
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.3);
     transition: transform 0.15s;
     margin-bottom: 8px;
 }
@@ -32,12 +31,12 @@ st.markdown("""
 .metric-number {
     font-size: 22px;
     font-weight: 700;
-    color: white;                     /* highlight number */
+    color: #D1C4E9;                  /* lighter purple highlight */
     margin-bottom: 4px;
 }
 .metric-label {
     font-size: 12px;
-    color: #FFFFFFCC;                 /* subtle label */
+    color: #B0B0B0;                  /* subtle gray labels */
     font-weight: 500;
 }
 .metric-column {
@@ -143,7 +142,7 @@ if uploaded_file:
             labels={"gain_loss":"Yards Gained","plays":"Number of Plays"},
             title="Gain / Loss Distribution",
             template="plotly_dark",
-            color_discrete_sequence=["#FFFFFF"]
+            color_discrete_sequence=["#B39DDB"]   # light purple
         )
 
         # Most frequent concepts
@@ -152,7 +151,7 @@ if uploaded_file:
             top_concepts_all, x="count", y="concept", color="play_direction", orientation="h",
             title="Most Frequent Concepts by Play Direction",
             template="plotly_dark",
-            color_discrete_sequence=["#FFFFFF","#000000","#CCCCCC"]
+            color_discrete_sequence=["#D1C4E9","#9575CD","#B0B0B0"]  # purples + gray
         )
 
         # Run/Pass Pie
@@ -160,7 +159,7 @@ if uploaded_file:
         play_type_summary_all.columns = ["play_type","count"]
         run_pass_fig_all = px.pie(
             play_type_summary_all, names="play_type", values="count", title="Run vs Pass %",
-            color="play_type", color_discrete_map={"Run":"#000000","Pass":"#FFFFFF"}, template="plotly_dark"
+            color="play_type", color_discrete_map={"Run":"#9575CD","Pass":"#D1C4E9"}, template="plotly_dark"
         )
 
         # Concept Pie
@@ -169,7 +168,7 @@ if uploaded_file:
         concept_pie_fig_all = px.pie(
             concept_summary_all, names="concept", values="count",
             title="Most Frequent Concepts",
-            color_discrete_sequence=["#FFFFFF","#CCCCCC","#000000","#FFFFFF","#CCCCCC","#000000"],
+            color_discrete_sequence=["#D1C4E9","#9575CD","#B0B0B0","#D1C4E9","#9575CD","#B0B0B0"],
             template="plotly_dark"
         )
 
@@ -180,11 +179,3 @@ if uploaded_file:
         r2c1, r2c2 = st.columns(2)
         r2c1.plotly_chart(run_pass_fig_all, use_container_width=True)
         r2c2.plotly_chart(concept_pie_fig_all, use_container_width=True)
-
-    # Tabs 2–5 remain largely unchanged; just update Plotly color sequences to match:
-    # White (#FFFFFF), Black (#000000), Purple (#4B2E83)
-    # Wherever "#7FDBFF", "#0A2342", "#AAAAAA" appeared, replace with the above colors.
-
-
-
-
