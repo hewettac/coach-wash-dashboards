@@ -16,7 +16,7 @@ st.set_page_config(page_title="Chapel Hill Football Analytics", layout="wide")
 st.markdown("""
 <style>
 .metric-card {
-    background-color: #4B2E83;       /* main purple */
+    background-color: #4B2E83;       /* TCU-style purple */
     padding: 10px 15px;
     border-radius: 8px;
     text-align: center;
@@ -43,6 +43,13 @@ st.markdown("""
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+.section-header {
+    font-size: 18px;
+    font-weight: 600;
+    color: #D1C4E9;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -126,7 +133,9 @@ if uploaded_file:
         "Play Prediction"
     ])
 
-    # Tab 1 - whole dataset
+    # -------------------------
+    # TAB 1: Overall Snapshot
+    # -------------------------
     with tab1:
         avg_gain_all = round(df["gain_loss"].mean(),1)
         max_gain_all = df["gain_loss"].max()
@@ -135,23 +144,23 @@ if uploaded_file:
         for col, val, label in zip([c1,c2,c3], [avg_gain_all,max_gain_all,min_gain_all], ["Average Gain","Max Gain","Min Gain"]):
             col.markdown(f'<div class="metric-card"><div class="metric-number">{val}</div><div class="metric-label">{label}</div></div>', unsafe_allow_html=True)
 
-        # Gain/Loss Distribution
+        # Gain / Loss Bar
         gain_summary_all = df.groupby("gain_loss").size().reset_index(name="plays").sort_values("gain_loss")
         gain_fig_all = px.bar(
             gain_summary_all, x="gain_loss", y="plays",
             labels={"gain_loss":"Yards Gained","plays":"Number of Plays"},
             title="Gain / Loss Distribution",
             template="plotly_dark",
-            color_discrete_sequence=["#B39DDB"]   # light purple
+            color_discrete_sequence=["#B39DDB"]
         )
 
-        # Most frequent concepts
+        # Concepts by direction
         top_concepts_all = df.groupby(["concept","play_direction"]).size().reset_index(name="count").sort_values("count",ascending=False).head(8)
         concept_fig_all = px.bar(
             top_concepts_all, x="count", y="concept", color="play_direction", orientation="h",
             title="Most Frequent Concepts by Play Direction",
             template="plotly_dark",
-            color_discrete_sequence=["#D1C4E9","#9575CD","#B0B0B0"]  # purples + gray
+            color_discrete_sequence=["#D1C4E9","#9575CD","#B0B0B0"]
         )
 
         # Run/Pass Pie
@@ -179,3 +188,122 @@ if uploaded_file:
         r2c1, r2c2 = st.columns(2)
         r2c1.plotly_chart(run_pass_fig_all, use_container_width=True)
         r2c2.plotly_chart(concept_pie_fig_all, use_container_width=True)
+
+    # -------------------------
+    # TAB 2: Filtered by Down/Yardline
+    # -------------------------
+    with tab2:
+        avg_gain = round(selected["gain_loss"].mean(), 1)
+        max_gain = selected["gain_loss"].max()
+        min_gain = selected["gain_loss"].min()
+        c1, c2, c3 = st.columns(3)
+        for col, val, label in zip([c1,c2,c3], [avg_gain,max_gain,min_gain], ["Average Gain","Max Gain","Min Gain"]):
+            col.markdown(f'<div class="metric-card"><div class="metric-number">{val}</div><div class="metric-label">{label}</div></div>', unsafe_allow_html=True)
+
+        gain_summary = selected.groupby("gain_loss").size().reset_index(name="plays").sort_values("gain_loss")
+        gain_fig = px.bar(
+            gain_summary, x="gain_loss", y="plays",
+            labels={"gain_loss":"Yards Gained","plays":"Number of Plays"},
+            title="Gain / Loss Distribution",
+            template="plotly_dark",
+            color_discrete_sequence=["#B39DDB"]
+        )
+
+        top_concepts = selected.groupby(["concept","play_direction"]).size().reset_index(name="count").sort_values("count",ascending=False).head(8)
+        concept_fig = px.bar(
+            top_concepts, x="count", y="concept", color="play_direction", orientation="h",
+            title="Most Frequent Concepts by Play Direction",
+            template="plotly_dark",
+            color_discrete_sequence=["#D1C4E9","#9575CD","#B0B0B0"]
+        )
+
+        play_type_summary = selected["play_type"].value_counts().reset_index()
+        play_type_summary.columns = ["play_type","count"]
+        run_pass_fig = px.pie(
+            play_type_summary, names="play_type", values="count",
+            title="Run vs Pass %",
+            color="play_type", color_discrete_map={"Run":"#9575CD","Pass":"#D1C4E9"},
+            template="plotly_dark"
+        )
+
+        concept_summary = selected["concept"].value_counts().head(6).reset_index()
+        concept_summary.columns = ["concept","count"]
+        concept_pie_fig = px.pie(
+            concept_summary, names="concept", values="count",
+            title="Most Frequent Concepts",
+            color_discrete_sequence=["#D1C4E9","#9575CD","#B0B0B0","#D1C4E9","#9575CD","#B0B0B0"],
+            template="plotly_dark"
+        )
+
+        r1c1, r1c2 = st.columns(2)
+        r1c1.plotly_chart(gain_fig, use_container_width=True)
+        r1c2.plotly_chart(concept_fig, use_container_width=True)
+        st.markdown('<div class="section-header">Run/Pass & Concept Distribution</div>', unsafe_allow_html=True)
+        r2c1, r2c2 = st.columns(2)
+        r2c1.plotly_chart(run_pass_fig, use_container_width=True)
+        r2c2.plotly_chart(concept_pie_fig, use_container_width=True)
+
+        st.markdown('<div class="section-header">Raw Play Data</div>', unsafe_allow_html=True)
+        st.dataframe(selected, use_container_width=True)
+
+    # -------------------------
+    # TAB 3: Success Heatmap
+    # -------------------------
+    with tab3:
+        st.markdown("### Play Success Heatmap")
+        df["success"] = df["gain_loss"] >= 4
+        heatmap_df = df.groupby(["down","yard_group"]).agg(success_rate=("success","mean"), num_plays=("success","count")).reset_index()
+
+        heatmap_fig = px.imshow(
+            heatmap_df.pivot(index="down",columns="yard_group",values="success_rate"),
+            text_auto=True, aspect="auto",
+            labels=dict(x="Yard Group", y="Down", color="Success Rate"),
+            color_continuous_scale=px.colors.sequential.Purples
+        )
+        heatmap_fig.update_traces(
+            hovertemplate="<b>Down:</b> %{y}<br><b>Yard Group:</b> %{x}<br><b>Success Rate:</b> %{z:.0%}<br><b>Number of Plays:</b> %{customdata}",
+            customdata=heatmap_df.pivot(index="down",columns="yard_group",values="num_plays").values
+        )
+        st.plotly_chart(heatmap_fig, use_container_width=True)
+
+    # -------------------------
+    # TAB 4: Concept Effectiveness
+    # -------------------------
+    with tab4:
+        st.markdown("### Concept Effectiveness")
+        concept_stats = (
+            df.groupby("concept")
+            .agg(avg_gain=("gain_loss","mean"), success_rate=("gain_loss",lambda x: (x>=4).mean()), plays=("gain_loss","count"))
+            .reset_index()
+        )
+        bubble = px.scatter(
+            concept_stats, x="success_rate", y="avg_gain", size="plays",
+            hover_name="concept", title="Concept Effectiveness",
+            template="plotly_dark",
+            color_discrete_sequence=["#D1C4E9"]
+        )
+        st.plotly_chart(bubble, use_container_width=True)
+        st.dataframe(concept_stats)
+
+    # -------------------------
+    # TAB 5: Play Prediction
+    # -------------------------
+    with tab5:
+        st.markdown("### Run / Pass Prediction")
+        model_df = df.dropna(subset=["down","distance","yardline","play_type"])
+        le = LabelEncoder()
+        model_df["play_type_encoded"] = le.fit_transform(model_df["play_type"])
+        X = model_df[["down","distance","yardline"]]
+        y = model_df["play_type_encoded"]
+        X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+        model = RandomForestClassifier()
+        model.fit(X_train,y_train)
+
+        pred_down = st.selectbox("Down", sorted(df["down"].unique()))
+        pred_dist = st.number_input("Distance", 1, 20, 10)
+        pred_yard = st.slider("Yardline", -50, 50, 0)
+
+        prediction = model.predict([[pred_down, pred_dist, pred_yard]])
+        predicted_play = le.inverse_transform(prediction)[0]
+
+        st.metric("Predicted Play Type", predicted_play)
