@@ -48,12 +48,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------
-# Sidebar Logo
-# -------------------------
-st.sidebar.markdown('<div style="text-align:center; margin-bottom:20px;">', unsafe_allow_html=True)
-st.sidebar.image("images/large_ChapelHillHS_AthleticMark.png", width=150)
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
 
 # -------------------------
 # Sidebar Upload
@@ -382,4 +377,5 @@ if uploaded_file:
         predicted_play = le.inverse_transform(prediction)[0]
 
         st.metric("Predicted Play Type", predicted_play)
+
 
