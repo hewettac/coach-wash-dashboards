@@ -16,7 +16,7 @@ st.set_page_config(page_title="Chapel Hill Football Analytics", layout="wide")
 st.markdown("""
 <style>
 .metric-card {
-    background-color: #4B2E83;       /* TCU-style purple */
+    background-color: #4B2E83;       /*  purple */
     padding: 10px 15px;
     border-radius: 8px;
     text-align: center;
@@ -57,7 +57,7 @@ st.markdown("""
 # -------------------------
 # Sidebar Upload
 # -------------------------
-st.sidebar.title("Har‑Ber Football Dashboard")
+st.sidebar.title("Chapel Hill Football Dashboard")
 uploaded_file = st.sidebar.file_uploader("Upload Hudl Excel File", type=["xlsx","xls"])
 
 if uploaded_file:
@@ -278,7 +278,7 @@ if uploaded_file:
         )
         bubble = px.scatter(
             concept_stats, x="success_rate", y="avg_gain", size="plays",
-            hover_name="concept", title="Concept Effectiveness",
+            hover_name="concept",
             template="plotly_dark",
             color_discrete_sequence=["#D1C4E9"]
         )
@@ -307,3 +307,4 @@ if uploaded_file:
         predicted_play = le.inverse_transform(prediction)[0]
 
         st.metric("Predicted Play Type", predicted_play)
+
