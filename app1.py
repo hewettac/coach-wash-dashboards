@@ -5,7 +5,7 @@ import plotly.express as px
 # -------------------------
 # Page Config
 # -------------------------
-st.set_page_config(page_title="Har‑Ber Football Analytics", layout="wide")
+st.set_page_config(page_title="Chapel Hill Football Analytics", layout="wide")
 
 st.markdown("""
 <style>
@@ -45,11 +45,14 @@ st.markdown("""
     flex-direction: column;
     gap: 8px;
 }
+</style>
+""", unsafe_allow_html=True)
+
 # -------------------------
 # Sidebar Logo
 # -------------------------
 st.sidebar.markdown('<div style="text-align:center; margin-bottom:20px;">', unsafe_allow_html=True)
-st.sidebar.image("large_ChapelHillHs_AthleticMark.png", width=150)
+st.sidebar.image("large_ChapelHillHS_AthleticMark.png", width=150)
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # -------------------------
@@ -377,6 +380,5 @@ if uploaded_file:
 
         prediction = model.predict([[pred_down, pred_dist, pred_yard]])
         predicted_play = le.inverse_transform(prediction)[0]
-
 
         st.metric("Predicted Play Type", predicted_play)
